@@ -8,7 +8,7 @@
 <body>
     <div class="w-full p-10 bg-gray-50">
         <div class="bg-white rounded-lg p-10 shadow">
-            <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today!</p>
+            <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today ✍🏼</p>
             <div>
                 <h2 class="text-base font-semibold leading-7 text-gray-900">Edit Blog</h2>
                 <p class="mt-1 text-sm leading-6 text-gray-600">All fields are required. </p>
@@ -29,7 +29,7 @@
                 <div class="mt-10">
                     <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
                     <div class="mt-2">
-                        <input type="text" name="title" id="title" class="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" value={{$blog->title}}>
+                        <input type="text" name="title" id="title" class="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" value="{{$blog->title}}">
                     </div>
                 </div>
     

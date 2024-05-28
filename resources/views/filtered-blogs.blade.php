@@ -10,12 +10,11 @@
     @include('/components.nav')
 </div>
 <div class="p-4 sm:ml-64 bg-gray-50">
-    @include('/components.messages')
     <div class="bg-white rounded-lg p-10 shadow">
         <p class="text-xl text-emerald-600 font-bold pb-7">Your daily dose of blog brilliance ✨</p>
         <div class="pb-12">
-            <h2 class="text-base font-semibold leading-7 text-gray-900">All Blogs</h2>
-            <p class="mt-1 text-sm leading-6 text-gray-600">These are all the blogs produced by different authors. </p>
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Published Blogs</h2>
+            <p class="mt-1 text-sm leading-6 text-gray-600">These are all the blogs that you have produced. </p>
         </div>
 
         <div class="grid gap-8 lg:grid-cols-2">
@@ -38,7 +37,6 @@
                 </div>
                 <h2 class="mb-2 text-xl font-bold tracking-tight text-gray-900 ">{{ $blog->title }}</h2>
                 <p class="mb-5 font-light text-gray-500 ">{{ $blog->body }}</p>
-                @if($user->id === $blog->author_id)
                     <div class="flex justify-between items-center">
                         <a href="{{ route('comment', ['blog_id' => $blog->id]) }}" class="font-medium text-sm text-sky-600 hover:underline">Read More 🡲</a>
                         <div class="flex justify-end gap-x-2">
@@ -56,11 +54,6 @@
                             </form>
                         </div>
                     </div>
-                @else 
-                    <div class="flex justify-between items-center">
-                        <a href="{{ route('comment', ['blog_id' => $blog->id]) }}" class="font-medium text-sm text-sky-600 hover:underline">Read More 🡲</a>
-                    </div>
-                @endif
             </article> 
             @endforeach
         </div>

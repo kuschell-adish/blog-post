@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -11,7 +12,7 @@ class UserController extends Controller
         return view('register'); 
     }
 
-    public function store(Request $request, User $user) {
+    public function store(Request $request) {
         $validated = $request->validate([
             "first_name" => ['required', 'min:4'], 
             "last_name" => ['required', 'min:4'],
@@ -31,23 +32,24 @@ class UserController extends Controller
             "address" => ['nullable'], 
             "photo" => 'image|mimes:jpeg,png,bmp,tiff|max:2048', 
         ]); 
-
-        if($request->hasFile('photo')) {
+    
+        $user = new User();
+        $user->fill($validated);
+    
+        if ($request->hasFile('photo')) {
             $request->validate([
-                "photo" => 'mimes:jpeg,png,bmp,tiff |max:4906'
+                "photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
             ]); 
-
-            $imagePath = $request->file('photo')->store('photo', 'public');
-
+    
+            $uploadedFile = $request->file('photo');
+            $imagePath = $uploadedFile->store('photo', 'public'); 
+    
             $user->photo = $imagePath;
         }
-        
-        // dd($validated); 
-
-        $user = User::create($validated);
-
+    
+        $user->save();
+    
         return view('login'); 
-
     }
 
     public function login () {
@@ -64,10 +66,9 @@ class UserController extends Controller
             $request->session()->regenerate();
 
             $username = auth()->user()->username;
-            echo "Hello $username";
         }
         
-        return view('index'); 
+        return redirect('/view/blogs')->with('message', "Welcome back, $username!"); 
 
         // return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
     }
@@ -82,7 +83,9 @@ class UserController extends Controller
     }
 
     public function view () {
-        return view('profile'); 
+        $user = Auth::user();
+
+        return view('profile', ['user' => $user]); 
     }
 
 }

@@ -32,6 +32,7 @@ Route::get('/', [BlogController::class, 'index'])->middleware('auth');
 Route::post('/add/blog', [BlogController::class, 'create']);
 
 Route::get('/view/blogs', [BlogController::class, 'view']); 
+Route::get('/filtered/blogs', [BlogController::class, 'filter']); 
 
 Route::get('/blog/{blog}', [BlogController::class, 'show']); 
 Route::put('/blog/{blog}', [BlogController::class, 'update']); 
@@ -42,5 +43,8 @@ Route::get('/view/profile', [UserController::class, 'view']);
 Route::get('/add/comment', [CommentsController::class, 'index'])->name('comment');
 Route::post('/post/comment', [CommentsController::class, 'create'])->name('post.comment');
 
+Route::get('/comment/{comment}', [CommentsController::class, 'show']); 
+Route::put('/comment/{comment}', [CommentsController::class, 'update']); 
+Route::delete('/comment/{comment}', [CommentsController::class, 'destroy']); 
 
 
