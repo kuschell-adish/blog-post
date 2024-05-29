@@ -18,22 +18,30 @@ class BlogController extends Controller
         $validated = $request->validate([
             "title" => ['required'], 
             "body" => ['required'], 
+            "cover_photo" => 'image|mimes:jpeg,png,bmp,tiff|max:2048', 
         ]);
     
         $author_id = Auth::id();
         $validated['author_id'] = $author_id;
 
-        // $blog = new Blogs;
-        // $blog->title = $validated['title'];
-        // $blog->body = $validated['body'];
-        // $blog->author_id = Auth::id();
-        // $blog->save();
+        $blog = new Blogs();
+        $blog->fill($validated);
     
+        if ($request->hasFile('cover_photo')) {
+            $request->validate([
+                "cover_photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
+            ]); 
+            $uploadedFile = $request->file('cover_photo');
+            $imagePath = $uploadedFile->store('photo', 'public'); 
+            $blog->cover_photo = $imagePath;
+        }
+        else {
+            $blog->cover_photo = 'photo/cover.jpg';
+        }
 
         // dd($validated);
-        
-
-        Blogs::create($validated);
+    
+        $blog->save();
         return redirect('/view/blogs')->with('message', 'Blog has been added successfully!'); 
     }
 
@@ -42,7 +50,7 @@ class BlogController extends Controller
     
         $blogs = DB::table('blogs')
                 ->join('authors', 'blogs.author_id', '=', 'authors.id')
-                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
+                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
                 ->get(); 
     
         return view('blogs', ['blogs' => $blogs, 'user' => $user]);
@@ -69,11 +77,20 @@ class BlogController extends Controller
         $author_id = Auth::id();
         $validated['author_id'] = $author_id;
 
-    $blog->update($validated); 
-    
-    // dd(session('message'));
+        if ($request->hasFile('cover_photo')) {
+            $request->validate([
+                "cover_photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
+            ]); 
+            $uploadedFile = $request->file('cover_photo');
+            $imagePath = $uploadedFile->store('photo', 'public'); 
+            $blog->cover_photo = $imagePath;
+        }
+        else {
+            $blog->cover_photo = 'photo/cover.jpg';
+        }
 
-    return redirect('/view/blogs')->with('message', 'Blog has been updated successfully!'); 
+        $blog->update($validated); 
+        return redirect('/view/blogs')->with('message', 'Blog has been updated successfully!'); 
 
     }
 

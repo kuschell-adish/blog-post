@@ -27,9 +27,9 @@ class UserController extends Controller
                 'regex:/[0-9]/',     
                 'regex:/[@$!%*#?&]/', 
             ],
-            "birthday" =>['nullable'], 
-            "gender" => ['nullable'], 
-            "address" => ['nullable'], 
+            "birthday" =>['required'], 
+            "gender" => ['required'], 
+            "address" => ['required'], 
             "photo" => 'image|mimes:jpeg,png,bmp,tiff|max:2048', 
         ]); 
     
@@ -40,11 +40,12 @@ class UserController extends Controller
             $request->validate([
                 "photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
             ]); 
-    
             $uploadedFile = $request->file('photo');
             $imagePath = $uploadedFile->store('photo', 'public'); 
-    
             $user->photo = $imagePath;
+        }
+        else {
+            $user->photo = 'photo/default.jpg';
         }
     
         $user->save();
@@ -64,13 +65,11 @@ class UserController extends Controller
 
         if (auth()->attempt($validated)){
             $request->session()->regenerate();
-
             $username = auth()->user()->username;
+            return redirect('/view/blogs')->with('message', "Welcome back, $username!"); 
         }
-        
-        return redirect('/view/blogs')->with('message', "Welcome back, $username!"); 
 
-        // return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
+        return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
     }
 
     public function logout (Request $request) {

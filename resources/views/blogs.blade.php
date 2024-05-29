@@ -23,11 +23,7 @@
             <article class="p-6 bg-white rounded-lg border border-gray-200 shadow-md ">
                 <div class="flex flex-row justify-between items-center space-x-4 mb-5">
                     <div class="flex flex-row gap-x-3 flex-grow">
-                        @php
-                        $author = \App\Models\User::find($blog->author_id);
-                        $profilePicture = $author ? $author->photo : null;
-                        @endphp
-                        <img class="w-7 h-7 rounded-full" src="{{ $profilePicture ? asset('storage/' . $profilePicture) : asset('storage/photo/default.jpg') }}" alt="{{ $profilePicture ? 'Profile Picture' : 'Default Profile Picture' }}" />
+                        <img class="w-7 h-7 rounded-full" src="{{ asset('storage/' . $blog->photo) ? asset('storage/' . $blog->photo) : asset('storage/photo/default.jpg') }}" alt="Profile Picture" />
                         <span class="font-medium text-emerald-600">
                             {{ $blog->author_name }}
                         </span>
