@@ -87,4 +87,35 @@ class UserController extends Controller
         return view('profile', ['user' => $user]); 
     }
 
+    public function update (Request $request, User $author, $id) {
+        $author = User::findOrFail($id);
+
+        $validated = $request->validate([
+           "first_name" => ['required', 'min:4'], 
+            "last_name" => ['required', 'min:4'],
+            "username" => ['required'],
+            "email" => ['required', 'email'],
+            "birthday" =>['required'], 
+            "gender" => ['required'], 
+            "address" => ['required'], 
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $request->validate([
+                "photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
+            ]); 
+            $uploadedFile = $request->file('photo');
+            $imagePath = $uploadedFile->store('photo', 'public'); 
+            $author->photo = $imagePath;
+        }
+        else {
+            $author->photo = 'photo/cover.jpg';
+        }
+
+        $author->update($validated); 
+        return redirect('/view/blogs')->with('message', 'Details has been updated successfully!'); 
+
+    }
+
+
 }

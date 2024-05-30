@@ -95,7 +95,7 @@
               <div class="sm:col-span-3">
                 <label for="birthday" class="block text-sm font-medium leading-6 text-gray-900">Birthday <span class="text-sm text-red-500">*</span></label>
                 <div class="mt-2">
-                  <input id="birthday" type="date" name="birthday" class="p-2 block w-full rounded-md border-0 py-[5px] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" required value="{{old('birthday')}}">
+                  <input id="birthday" type="date" name="birthday" class="p-2 block w-full rounded-md border-0 py-[5px] text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" max="2005-12-31" required value="{{old('birthday')}}">
                 </div>
               </div>
 

@@ -44,10 +44,11 @@
                 <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Post</button>
             </div>
           </form>
+          <div class="border-t border-emerald-200"></div>
           @foreach($comments as $comment)
            <h1>{{$comment->title}}</h1>
         <h2>{{$comment->body}}</h2>
-          <article class="p-6 mb-3 text-base border-t border-emerald-200">
+          <article class="p-6 mb-3 text-base border-b border-emerald-200">
               <footer class="flex justify-between items-center mb-2">
                   <div class="flex items-center">
                     <img class="w-7 h-7 rounded-full" src="{{ asset('storage/' . $comment->author->photo) ? asset('storage/' . $comment->author->photo) : asset('storage/photo/default.jpg') }}" alt="Profile Picture" />
