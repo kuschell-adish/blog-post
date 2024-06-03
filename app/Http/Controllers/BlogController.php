@@ -85,9 +85,6 @@ class BlogController extends Controller
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $blog->cover_photo = $imagePath;
         }
-        else {
-            $blog->cover_photo = 'photo/cover.jpg';
-        }
 
         $blog->update($validated); 
         return redirect('/view/blogs')->with('message', 'Blog has been updated successfully!'); 

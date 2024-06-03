@@ -40,7 +40,6 @@ Route::controller(BlogController::class)->group(function () {
     Route::delete('/blog/{blog}', 'destroy');
 });
 
-
 Route::controller(CommentsController::class)->group(function () {
     Route::get('/add/comment', 'index')->name('comment'); 
     Route::post('/post/comment', 'create');
@@ -48,6 +47,7 @@ Route::controller(CommentsController::class)->group(function () {
     Route::put('/comment/{comment}', 'update');
     Route::delete('/comment/{comment}', 'destroy');
 });
+
 
 
 

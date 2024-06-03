@@ -108,9 +108,6 @@ class UserController extends Controller
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $author->photo = $imagePath;
         }
-        else {
-            $author->photo = 'photo/cover.jpg';
-        }
 
         $author->update($validated); 
         return redirect('/view/blogs')->with('message', 'Details has been updated successfully!'); 
