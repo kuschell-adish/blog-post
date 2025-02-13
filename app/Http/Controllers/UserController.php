@@ -5,11 +5,22 @@ use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
 {
     public function register () {
-        return view('register'); 
+        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
+
+        if ($response->successful()){
+            $provinces = collect($response->json())->sortBy('name');
+        }
+        else {
+            $provinces = [];
+        }
+        return view('register', compact('provinces')); 
+
     }
 
     public function store(Request $request) {
@@ -32,6 +43,8 @@ class UserController extends Controller
             "address" => ['required'], 
             "photo" => 'image|mimes:jpeg,png,bmp,tiff|max:2048', 
         ]); 
+
+        $validated['password'] = Hash::make($validated['password']);
     
         $user = new User();
         $user->fill($validated);
@@ -70,6 +83,31 @@ class UserController extends Controller
         }
 
         return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
+    }
+
+    public function reset () {
+        return view('reset'); 
+    }
+
+    public function change (Request $request) {
+        $validated = $request->validate([
+            "email" => ['required', 'email'], 
+            "password" => [
+                'required',
+                'string',
+                'min:8',             
+                'regex:/[a-z]/',      
+                'regex:/[A-Z]/',      
+                'regex:/[0-9]/',     
+                'regex:/[@$!%*#?&]/', 
+            ],
+        ]); 
+
+        $user = User::where('email', $validated['email'])->firstOrFail();
+        $user->password = Hash::make($validated['password']);
+        $user->save();
+
+        return redirect('/login');  
     }
 
     public function logout (Request $request) {

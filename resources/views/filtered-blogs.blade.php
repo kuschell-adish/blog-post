@@ -38,7 +38,7 @@
                 <h2 class="mb-2 text-xl font-bold tracking-tight text-gray-900 ">{{ $blog->title }}</h2>
                 <p class="mb-5 font-light text-gray-500 ">{{ $blog->body }}</p>
                     <div class="flex justify-between items-center">
-                        <a href="{{ route('comment', ['blog_id' => $blog->id]) }}" class="font-medium text-sm text-sky-600 hover:underline">Read More 🡲</a>
+                        <a href="{{ route('comment', ['blog_id' => $blog->id]) }}" class="font-medium text-sm text-sky-600 hover:underline">Read More > </a>
                         <div class="flex justify-end gap-x-2">
                             <a class="bg-cyan-600 hover:bg-sky-800 text-xs text-white font-bold rounded-full p-2 px-4 text-center" href="/blog/{{$blog->id}}">
                                 Edit

@@ -7,7 +7,7 @@
 </head>
 <body class="bg-gray-50 p-10">
     <div class="bg-white rounded-lg p-10 shadow">
-        <p class="text-xl text-emerald-600 font-bold pb-7">Sign up to your account and start exploring our features 🤩</p>
+        <p class="text-xl text-emerald-600 font-bold pb-7">Let's get started with your account!</p>
     <form action="/store" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="space-y-12">
@@ -18,8 +18,11 @@
             <div class="col-span-full ">
                 <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Profile Photo</label>
                 <div class="mt-2 flex items-center gap-x-3">
-                  <img src="{{ asset('storage/photo/default.jpg') }}" alt="Default Image" class="w-20 h-20 mb-4 mt-5 rounded-full">
-                  <input id ="photo" type ="file" name="photo" class="rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-12">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                  </svg>
+
+                  <input id ="photo" type ="file" name="photo" class="rounded-md bg-white px-2.5 py-1.5 text-sm text-gray-900">
                 </div>
                 @error('photo')
                     <p class="text-xs text-red-700 mt-2">{{$message}}</p>
@@ -111,9 +114,14 @@
             </div>
   
               <div class="sm:col-span-3">
-                <label for="address" class="block text-sm font-medium leading-6 text-gray-900">City, Province <span class="text-sm text-red-500">*</span></label>
+                <label for="address" class="block text-sm font-medium leading-6 text-gray-900">Province <span class="text-sm text-red-500">*</span></label>
                 <div class="mt-2">
-                  <input type="text" name="address" id="address" class="p-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" required value="{{old('address')}}">
+                <select name="province" id="province" class="p-2 block w-full rounded-md border-0 py-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" required>
+                    <option value="" disabled selected>Select a Province</option>
+                    @foreach ($provinces as $province)
+                        <option value="{{ $province['code'] }}">{{ $province['name'] }}</option>
+                    @endforeach
+                </select>
                 </div>
               </div>
             </div>
@@ -122,7 +130,7 @@
       
         <div class="mt-6 flex items-center justify-end gap-x-6">
           <button type="button" id="cancelButton" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
-          <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Register</button>
+          <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Sign up</button>
         </div>
       </form>   
     </div>

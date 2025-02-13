@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::controller(UserController::class)->group(function () {
     Route::get('/register', 'register');
+    Route::get('/reset', 'reset'); 
+    Route::post('/change', 'change'); 
     Route::post('/store', 'store'); 
     Route::get('/login', 'login')->name('login')->middleware('guest');
     Route::post('/process', 'process');

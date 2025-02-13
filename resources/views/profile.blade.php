@@ -11,7 +11,6 @@
 </div>
 <div class="p-4 sm:ml-64 bg-gray-50">
     <div class="bg-white rounded-lg p-10 shadow">
-        <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today ✍🏼</p>
         <div>
             <h2 class="text-base font-semibold leading-7 text-gray-900">Your Profile</h2>
             <p class="mt-1 text-sm leading-6 text-gray-600">Here are all your basic information. </p>
@@ -20,18 +19,18 @@
             @auth
             @csrf
             @method('PUT')
-            <div class="w-2/12 h-2/12 flex mx-auto justify-center items-center">
+            <div class="mt-5 w-24 h-24 flex mx-auto justify-center items-center">
                 @if( Auth::user()->photo) 
-                    <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Profile photo" class="mb-4 rounded-full">
+                    <img src="{{ asset('storage/' . Auth::user()->photo) }}" alt="Profile photo" class="rounded-full">
                 
                 @else 
-                    <img src="{{ asset('storage/photo/default.jpg') }}" alt="Default Image" class="mb-4 rounded-full">
+                    <img src="{{ asset('storage/photo/default.jpg') }}" alt="Default Image" class="rounded-full">
                 @endif
             </div>
 
             <div class="mt-5">
                  <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Profile Photo</label>
-                 <input id ="photo" type ="file" name="photo" class="rounded-md bg-white py-1.5 text-sm font-semibold text-gray-900">
+                 <input id ="photo" type ="file" name="photo" class="rounded-md bg-white py-1.5 text-sm text-gray-900">
                 @error('photo')
                     <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                 @enderror
