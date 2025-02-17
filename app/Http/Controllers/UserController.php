@@ -122,7 +122,16 @@ class UserController extends Controller
     public function view () {
         $user = Auth::user();
 
-        return view('profile', ['user' => $user]); 
+        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
+
+        if ($response->successful()){
+            $provinces = collect($response->json())->sortBy('name');
+        }
+        else {
+            $provinces = [];
+        }
+
+        return view('profile', ['user' => $user, 'provinces' => $provinces]); 
     }
 
     public function update (Request $request, User $author, $id) {

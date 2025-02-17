@@ -23,7 +23,7 @@
                 <img src="{{asset('storage/' . $blog->cover_photo) ? asset('storage/' . $blog->cover_photo) : asset('storage/photo/cover.jpg') }}" alt="Cover Photo"class="w-full h-full object-cover rounded">
             </div>
             <h2 class="mb-2 text-xl font-bold tracking-tight text-gray-900 ">{{ $blog->title }}</h2>
-            <p class="mb-5 font-light text-gray-500 ">{{ $blog->body }}</p>
+            <p class="mb-5 font-light text-gray-500 text-justify">{{ $blog->body }}</p>
         </article> 
     </section>
     <section class="bg-stone-50 w-1/2 py-8 lg:py-16 antialiased rounded-r-lg shadow">
