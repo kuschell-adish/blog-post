@@ -1,8 +1,9 @@
 <?php
 
 use App\Http\Controllers\BlogController;
-use App\Http\Controllers\CommentsController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -20,35 +21,17 @@ use Illuminate\Support\Facades\Route;
 //     return view('welcome');
 // });
 
-Route::controller(UserController::class)->group(function () {
-    Route::get('/register', 'register');
-    Route::get('/reset', 'reset'); 
-    Route::post('/change', 'change'); 
-    Route::post('/store', 'store'); 
-    Route::get('/login', 'login')->name('login')->middleware('guest');
-    Route::post('/process', 'process');
-    Route::post('/logout', 'logout');
-    Route::get('/view/profile', 'view');
-    Route::put('/user/{id}', 'update');
+Route::resource('users', UserController::class);
+
+Route::post('/sessions/logout', [SessionController::class, 'logout'])->name('sessions.logout');
+Route::resource('sessions', SessionController::class);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/blogs/filtered', [BlogController::class, 'filtered'])->name('blogs.filtered');
+    Route::resource('blogs', BlogController::class);
+    Route::resource('comments', CommentController::class);
 });
 
-Route::controller(BlogController::class)->group(function () {
-    Route::get('/', 'index')->middleware('auth'); 
-    Route::post('/add/blog', 'create');
-    Route::get('/view/blogs', 'view');
-    Route::get('/filtered/blogs', 'filter');
-    Route::get('/blog/{blog}', 'show');
-    Route::put('/blog/{blog}', 'update');
-    Route::delete('/blog/{blog}', 'destroy');
-});
-
-Route::controller(CommentsController::class)->group(function () {
-    Route::get('/add/comment', 'index')->name('comment'); 
-    Route::post('/post/comment', 'create');
-    Route::get('/comment/{comment}', 'show');
-    Route::put('/comment/{comment}', 'update');
-    Route::delete('/comment/{comment}', 'destroy');
-});
 
 
 

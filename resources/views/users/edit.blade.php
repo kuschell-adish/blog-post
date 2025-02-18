@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  @vite('resources/css/app.css')
-</head>
+@include('/components.header')
 <body>
     <section class="bg-gray-50">
         <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -31,6 +25,6 @@
                 </div>
             </div>
         </div>
-      </section>
+    </section>
 </body>
 </html>

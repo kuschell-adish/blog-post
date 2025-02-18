@@ -1,14 +1,8 @@
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  @vite('resources/css/app.css')
-</head>
+@include('/components.header')
 <body class="bg-gray-50 p-10">
     <div class="bg-white rounded-lg p-10 shadow">
         <p class="text-xl text-emerald-600 font-bold pb-7">Let's get started with your account!</p>
-    <form action="/store" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('users.store')}}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="space-y-12">
           <div class="border-b border-gray-900/10 pb-12">
@@ -21,13 +15,12 @@
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="size-12">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                   </svg>
-
                   <input id ="photo" type ="file" name="photo" class="rounded-md bg-white px-2.5 py-1.5 text-sm text-gray-900">
                 </div>
                 @error('photo')
-                    <p class="text-xs text-red-700 mt-2">{{$message}}</p>
-                    @enderror
-              </div>
+                  <p class="text-xs text-red-700 mt-2">{{$message}}</p>
+                @enderror
+            </div>
 
             <div class="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
               <div class="sm:col-span-4">
@@ -38,7 +31,7 @@
                   </div>
                   @error('email')
                     <p class="text-xs text-red-700 mt-2">{{$message}}</p>
-                    @enderror
+                  @enderror
                 </div>
               </div>
             </div>
@@ -50,14 +43,13 @@
                     <div class="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300  sm:max-w-md">
                       <input type="password" name="password" id="password" class="p-2 block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6" required>
                     </div>
-                    <p class="text-xs text-gray-600">Password must have at least 8 characters and must contain the following: uppercase letters, lowercase letters, numbers, and symbols.</p>
+                    <p class="text-xs text-gray-500 italic mt-1">Password must have at least 8 characters and must contain the following: uppercase letters, lowercase letters, numbers, and symbols.</p>
                     @error('password')
-                    <p class="text-xs text-red-700 mt-2">{{$message}}</p>
+                      <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                     @enderror
                   </div>
                 </div>
-              </div>
-              
+            </div>  
           </div>
   
           <div class="border-b border-gray-900/10 pb-12">
@@ -111,7 +103,7 @@
                         <option value="Female" {{ old('gender') == "Female" ? 'selected' : '' }}>Female</option>
                     </select>
                 </div>
-            </div>
+              </div>
   
               <div class="sm:col-span-3">
                 <label for="address" class="block text-sm font-medium leading-6 text-gray-900">Province <span class="text-sm text-red-500">*</span></label>
@@ -126,14 +118,16 @@
               </div>
             </div>
           </div>
+
         </div>
       
         <div class="mt-6 flex items-center justify-end gap-x-6">
           <button type="button" id="cancelButton" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
           <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Sign up</button>
         </div>
-      </form>   
-    </div>
+        
+    </form>   
+  </div>
 </body>
 </html>
 

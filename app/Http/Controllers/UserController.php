@@ -9,8 +9,15 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 class UserController extends Controller
-{
-    public function register () {
+{  
+    public function __construct()
+    {
+        $this->middleware('auth')->only('update');
+    }
+    
+    public function index () {
+        $user = Auth::user();
+
         $response = Http::get('https://psgc.gitlab.io/api/provinces/');
 
         if ($response->successful()){
@@ -19,8 +26,19 @@ class UserController extends Controller
         else {
             $provinces = [];
         }
-        return view('register', compact('provinces')); 
+        return view('users.index', ['user' => $user, 'provinces' => $provinces]);
+    }
 
+    public function create () {
+        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
+
+        if ($response->successful()){
+            $provinces = collect($response->json())->sortBy('name');
+        }
+        else {
+            $provinces = [];
+        }
+        return view('users.create', ['provinces' => $provinces]);
     }
 
     public function store(Request $request) {
@@ -63,75 +81,7 @@ class UserController extends Controller
     
         $user->save();
     
-        return view('login'); 
-    }
-
-    public function login () {
-        return view('login'); 
-    }
-
-    public function process (Request $request) {
-        $validated = $request->validate([
-            "email" => ['required', 'email'], 
-            "password" => 'required'
-        ]); 
-
-        if (auth()->attempt($validated)){
-            $request->session()->regenerate();
-            $username = auth()->user()->username;
-            return redirect('/view/blogs')->with('message', "Welcome back, $username!"); 
-        }
-
-        return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
-    }
-
-    public function reset () {
-        return view('reset'); 
-    }
-
-    public function change (Request $request) {
-        $validated = $request->validate([
-            "email" => ['required', 'email'], 
-            "password" => [
-                'required',
-                'string',
-                'min:8',             
-                'regex:/[a-z]/',      
-                'regex:/[A-Z]/',      
-                'regex:/[0-9]/',     
-                'regex:/[@$!%*#?&]/', 
-            ],
-        ]); 
-
-        $user = User::where('email', $validated['email'])->firstOrFail();
-        $user->password = Hash::make($validated['password']);
-        $user->save();
-
-        return redirect('/login');  
-    }
-
-    public function logout (Request $request) {
-        auth()->logout();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect('/login');  
-    }
-
-    public function view () {
-        $user = Auth::user();
-
-        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
-
-        if ($response->successful()){
-            $provinces = collect($response->json())->sortBy('name');
-        }
-        else {
-            $provinces = [];
-        }
-
-        return view('profile', ['user' => $user, 'provinces' => $provinces]); 
+        return redirect()->route('sessions.index');
     }
 
     public function update (Request $request, User $author, $id) {
@@ -157,8 +107,7 @@ class UserController extends Controller
         }
 
         $author->update($validated); 
-        return redirect('/view/blogs')->with('message', 'Details has been updated successfully!'); 
-
+        return redirect()->route('users.index')->with('message', 'Profile has been updated successfully!');
     }
 
 

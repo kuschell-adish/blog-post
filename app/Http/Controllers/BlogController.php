@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Blogs;
-use App\Models\Comments; 
+use App\Models\Blog;
+use App\Models\Comment; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; 
@@ -11,10 +11,23 @@ use Illuminate\Support\Facades\DB;
 class BlogController extends Controller
 {
     public function index () {
-        return view ('index'); 
+        $user = Auth::user();
+    
+        $blogs = DB::table('blogs')
+                ->join('authors', 'blogs.author_id', '=', 'authors.id')
+                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
+                ->get(); 
+    
+        return view('blogs.index', ['blogs' => $blogs, 'user' => $user]);
     }
 
-    public function create (Request $request) {
+    public function create () {
+        $user = Auth::user();
+
+        return view('blogs.create', ['user' => $user]);
+    }
+
+    public function store (Request $request) {
         $validated = $request->validate([
             "title" => ['required'], 
             "body" => ['required'], 
@@ -24,7 +37,7 @@ class BlogController extends Controller
         $author_id = Auth::id();
         $validated['author_id'] = $author_id;
 
-        $blog = new Blogs();
+        $blog = new Blog();
         $blog->fill($validated);
     
         if ($request->hasFile('cover_photo')) {
@@ -38,37 +51,17 @@ class BlogController extends Controller
         else {
             $blog->cover_photo = 'photo/cover.jpg';
         }
-
-        // dd($validated);
     
         $blog->save();
-        return redirect('/view/blogs')->with('message', 'Blog has been added successfully!'); 
-    }
-
-    public function view() {
-        $user = Auth::user();
-    
-        $blogs = DB::table('blogs')
-                ->join('authors', 'blogs.author_id', '=', 'authors.id')
-                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
-                ->get(); 
-    
-        return view('blogs', ['blogs' => $blogs, 'user' => $user]);
+        return redirect()->route('blogs.filtered')->with('message', 'Blog has been added successfully!'); 
     }
 
     public function show ($id) {
-
-        $data = Blogs::findOrFail($id); 
-        // dd($data);
-        return view('edit-blog', ['blog' => $data]); 
+        $data = Blog::findOrFail($id); 
+        return view('blogs.edit', ['blog' => $data]); 
     }
 
-    public function destroy (Blogs $blog) {
-        $blog->delete();
-        return redirect('/view/blogs')->with('message', 'Blog has been deleted successfully!'); 
-    }
-
-    public function update (Request $request, Blogs $blog) {
+    public function update (Request $request, Blog $blog) {
         $validated = $request->validate([
             "title" => ['required'], 
             "body" => ['required'], 
@@ -87,13 +80,17 @@ class BlogController extends Controller
         }
 
         $blog->update($validated); 
-        return redirect('/view/blogs')->with('message', 'Blog has been updated successfully!'); 
+        return redirect()->route('blogs.filtered')->with('message', 'Blog has been updated successfully!'); 
 
     }
 
-    public function filter () {
-        $user = Auth::user();
+    public function destroy (Blog $blog) {
+        $blog->delete();
+        return redirect()->route('blogs.filtered')->with('message', 'Blog has been deleted successfully!'); 
+    }
 
+    public function filtered () {
+        $user = Auth::user();
 
         $filter = DB::table('blogs')
                 ->join('authors', 'blogs.author_id', '=', 'authors.id')
@@ -101,7 +98,7 @@ class BlogController extends Controller
                 ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
                 ->simplePaginate(10);
 
-    return view('filtered-blogs', ['blogs' => $filter, 'user' => $user]);
+        return view('blogs.filtered', ['blogs' => $filter, 'user' => $user]);
     
     }
 }
