@@ -1,6 +1,6 @@
 @include('/components.header')
-<body>
-    <div class="w-full p-10 bg-gray-50">
+<body class="bg-gray-50">
+    <div class="w-full p-10">
         <div class="bg-white rounded-lg p-10 shadow">
             <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today ✍🏼</p>
             <div>

@@ -13,31 +13,30 @@ class CommentController extends Controller
 
     public function index(Request $request)
     {
-    $user = Auth::user();
+        $user = Auth::user();
 
-    $blog_id = $request->blog_id;
+        $blog_id = $request->blog_id;
 
-    $blog = Blog::findOrFail($blog_id);
+        $blog = Blog::findOrFail($blog_id);
 
-    $comments = Comment::join('authors', 'comments.author_id', '=', 'authors.id')
-    ->select('comments.id', 'comments.comment', 'comments.updated_at', 'comments.author_id', 'comments.blog_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
-    ->where('comments.blog_id', $blog_id)
-    ->get();
+        $comments = Comment::join('authors', 'comments.author_id', '=', 'authors.id')
+                    ->select('comments.id', 'comments.comment', 'comments.updated_at', 'comments.author_id', 'comments.blog_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
+                    ->where('comments.blog_id', $blog_id)
+                    ->get();
 
-
-    return view('comments.index', [
-        'comments' => $comments,
-        'user' => $user,
-        'blog_id' => $blog_id, 
-        'blog' => $blog
-    ]);
+        return view('comments.index', [
+            'comments' => $comments,
+            'user' => $user,
+            'blog_id' => $blog_id, 
+            'blog' => $blog
+        ]);
     }
     
     public function store(Request $request) {
         $validated = $request->validate([
-            "comment" => ['required'],
-            "blog_id" => ['required', 'integer'],
-            "author_id" => ['required', 'integer'],
+            "comment" => ['required', 'string', 'min:3', 'max:150'], 
+            "blog_id" => ['required', 'integer', 'exists:blogs,id'], 
+            "author_id" => ['required', 'integer', 'exists:authors,id'],
         ]);
 
         $comment = new Comment;
@@ -57,7 +56,7 @@ class CommentController extends Controller
 
     public function update (Request $request, Comment $comment) {
         $validated = $request->validate([
-            "comment" => ['required'], 
+            "comment" => ['required', 'string', 'min:3', 'max:150'], 
         ]);
     
         $author_id = Auth::id();

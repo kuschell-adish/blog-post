@@ -37,6 +37,7 @@ class SessionController extends Controller
         return view('users.edit');
     }
 
+    #temporary reset password
     public function update (Request $request) {
         $validated = $request->validate([
             "email" => ['required', 'email'], 

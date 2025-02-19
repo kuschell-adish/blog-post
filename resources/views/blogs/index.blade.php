@@ -1,9 +1,9 @@
 @include('/components.header')
-<body>
+<body class="bg-gray-50">
     <div>
         @include('/components.sidebar')
     </div>
-    <div class="p-4 sm:ml-64 bg-gray-50">
+    <div class="p-4 sm:ml-64">
         @include('/components.messages')
         <div class="bg-white rounded-lg p-10 shadow">
             <p class="text-xl text-emerald-600 font-bold pb-7">Your daily dose of blog brilliance ✨</p>

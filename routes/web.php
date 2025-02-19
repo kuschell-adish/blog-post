@@ -17,10 +17,6 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Route::get('/', function () {
-//     return view('welcome');
-// });
-
 Route::resource('users', UserController::class);
 
 Route::post('/sessions/logout', [SessionController::class, 'logout'])->name('sessions.logout');

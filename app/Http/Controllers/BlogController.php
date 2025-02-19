@@ -12,7 +12,7 @@ class BlogController extends Controller
 {
     public function index () {
         $user = Auth::user();
-    
+
         $blogs = DB::table('blogs')
                 ->join('authors', 'blogs.author_id', '=', 'authors.id')
                 ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
@@ -29,9 +29,9 @@ class BlogController extends Controller
 
     public function store (Request $request) {
         $validated = $request->validate([
-            "title" => ['required'], 
-            "body" => ['required'], 
-            "cover_photo" => 'image|mimes:jpeg,png,bmp,tiff|max:2048', 
+            "title" => ['required', 'string', 'min:10', 'max:70'], 
+            "body" => ['required', 'string', 'min:10', 'max:1000'], 
+            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048'] 
         ]);
     
         $author_id = Auth::id();
@@ -41,17 +41,11 @@ class BlogController extends Controller
         $blog->fill($validated);
     
         if ($request->hasFile('cover_photo')) {
-            $request->validate([
-                "cover_photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
-            ]); 
             $uploadedFile = $request->file('cover_photo');
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $blog->cover_photo = $imagePath;
         }
-        else {
-            $blog->cover_photo = 'photo/cover.jpg';
-        }
-    
+
         $blog->save();
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been added successfully!'); 
     }
@@ -63,17 +57,15 @@ class BlogController extends Controller
 
     public function update (Request $request, Blog $blog) {
         $validated = $request->validate([
-            "title" => ['required'], 
-            "body" => ['required'], 
+            "title" => ['required', 'string', 'min:10', 'max:70'], 
+            "body" => ['required', 'string', 'min:10', 'max:1000'],
+            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048']  
         ]);
     
         $author_id = Auth::id();
         $validated['author_id'] = $author_id;
 
         if ($request->hasFile('cover_photo')) {
-            $request->validate([
-                "cover_photo" => 'mimes:jpeg,png,bmp,tiff|max:2048'
-            ]); 
             $uploadedFile = $request->file('cover_photo');
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $blog->cover_photo = $imagePath;
