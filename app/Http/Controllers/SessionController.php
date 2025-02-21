@@ -32,11 +32,6 @@ class SessionController extends Controller
         return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 
     }
 
-    #to add smtp
-    public function edit () {
-        return view('users.edit');
-    }
-
     #temporary reset password
     public function update (Request $request) {
         $validated = $request->validate([
