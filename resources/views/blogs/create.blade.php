@@ -5,11 +5,10 @@
     </div>
     <div class="p-4 sm:ml-64">
         <div class="bg-white rounded-lg p-10 shadow">
-            <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today ✍🏼</p>
             <div>
                 <h2 class="text-base font-semibold leading-7 text-gray-900">Create Blog</h2>
                 <p class="mt-1 text-sm leading-6 text-gray-600">All fields are required. </p>
-                <form action = "{{ route('blogs.store' )}}" method="POST" enctype="multipart/form-data">
+                <form action = "{{ route('blogs.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @auth
                     <div class="mt-10">
@@ -29,7 +28,7 @@
                     @endauth
                     <div class="mt-10">
                         <label for="cover_photo" class="block text-sm font-medium leading-6 text-gray-900 ">Cover Photo</label>
-                        <input id ="cover_photo" type ="file" name="cover_photo" class="rounded-md bg-white px-1 py-1.5 text-sm text-gray-900">
+                        <input id ="cover_photo" type ="file" name="cover_photo" accept="image/png, image/jpeg, image/jpg" class="rounded-md bg-white px-1 py-1.5 text-sm text-gray-900">
                         @error('cover_photo')
                             <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                         @enderror
@@ -39,12 +38,18 @@
                         <div class="mt-2">
                             <input type="text" name="title" id="title" class="pl-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 sm:text-sm sm:leading-6" required value="{{ old('title') }}">
                         </div>
+                        @error('title')
+                            <p class="text-xs text-red-700 mt-2">{{$message}}</p>
+                        @enderror
                     </div>
                     <div class="mt-10">
                         <label for="body" class="block text-sm font-medium leading-6 text-gray-900">Body <span class="text-sm text-red-500">*</span></label>
                         <div class="mt-2">
                             <textarea id="body" name="body" rows="4" class="pl-2 block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300" required>{{ old('body') }}</textarea>
                         </div>
+                        @error('body')
+                            <p class="text-xs text-red-700 mt-2">{{$message}}</p>
+                        @enderror
                     </div>
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="button" id="cancelButton" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
@@ -61,7 +66,8 @@
     var cancelButton = document.getElementById("cancelButton");
 
     cancelButton.addEventListener("click", function(){
-      document.getElementById("title").value = ""; 
-      document.getElementById("body").value = ""; 
+        document.getElementById("cover_photo").value = null; 
+        document.getElementById("title").value = null; 
+        document.getElementById("body").value = null; 
     });
 </script>

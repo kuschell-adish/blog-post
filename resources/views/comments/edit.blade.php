@@ -1,27 +1,31 @@
 @include('/components.header')
-<body class="bg-gray-50">
-    <div class="w-full p-10">
-        <div class="bg-white rounded-lg p-10 shadow">
-            <p class="text-xl text-emerald-600 font-bold pb-7">Begin your blogging journey today ✍🏼</p>
-            <div>
-                <h2 class="text-base font-semibold leading-7 text-gray-900">Edit Comment</h2>
-                <p class="mt-1 text-sm leading-6 text-gray-600">All fields are required. </p>
-                <form action = "{{ route('comments.update', ['comment' => $comment->id])}}" method="POST">
-                    @method('PUT')
-                    @csrf
-                    <input type="hidden" name="author_id" value="{{ Auth::id() }}">
-                    <div class="mt-10">
-                        <label for="comment" class="block text-sm font-medium leading-6 text-gray-900">Comment</label>
-                        <div class="mt-2">
-                            <textarea id="comment" name="comment" rows="4" class="pl-2 block p-2.5 w-full text-sm text-gray-900 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500">{{$comment->comment}}</textarea>
-                        </div>
-                    </div>
-                    <div class="mt-6 flex items-center justify-end gap-x-6">
-                        <a href="/view/blogs" class="text-sm font-semibold leading-6 text-gray-900">Cancel</a>
-                        <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Update</button>
-                    </div>
-                </form>
-            </div>
+
+<body class="bg-gray-50 flex items-center justify-center min-h-screen">
+    <div class="px-4 py-10 sm:px-6 lg:px-8 w-full max-w-2xl">
+        <div class="bg-white rounded-lg shadow p-6 sm:p-8 lg:p-10">
+            <h2 class="text-base font-semibold leading-7 text-gray-900">Edit Comment</h2>
+            <p class="mt-1 text-sm text-gray-600">All fields are required.</p>
+
+            <form action="{{ route('comments.update', ['comment' => $comment->id]) }}" method="POST" class="mt-6">
+                @method('PUT')
+                @csrf
+                <input type="hidden" name="author_id" value="{{ Auth::id() }}">
+
+                <div>
+                    <label for="comment" class="block text-sm font-medium text-gray-900">Comment</label>
+                    <textarea id="comment" name="comment" rows="4"
+                        class="mt-2 block w-full rounded-lg border border-gray-300 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500"
+                        required>{{ $comment->comment }}</textarea>
+                </div>
+
+                <div class="mt-6 flex flex-col sm:flex-row items-center justify-end gap-4">
+                    <a href="{{ route('blogs.index') }}" class="text-sm font-semibold text-gray-900">Cancel</a>
+                    <button type="submit"
+                        class="w-full sm:w-auto rounded-md bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2">
+                        Update
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </body>

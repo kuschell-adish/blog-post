@@ -26,7 +26,7 @@
                         </div>
                         <div class="sm:col-span-3 flex-column mt-8 ml-0">
                             <label for="photo" class="block text-sm font-medium leading-6 text-gray-900">Profile Photo</label>
-                            <input id ="photo" type ="file" name="photo" class="rounded-md bg-white py-1.5 text-sm text-gray-900">
+                            <input id ="photo" type ="file" name="photo" accept="image/png, image/jpeg, image/jpg" class="rounded-md bg-white py-1.5 text-sm text-gray-900">
                             @error('photo')
                                 <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                             @enderror

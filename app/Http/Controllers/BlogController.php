@@ -7,6 +7,7 @@ use App\Models\Comment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB; 
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
@@ -16,7 +17,7 @@ class BlogController extends Controller
         $blogs = DB::table('blogs')
                 ->join('authors', 'blogs.author_id', '=', 'authors.id')
                 ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
-                ->get(); 
+                ->get();    
     
         return view('blogs.index', ['blogs' => $blogs, 'user' => $user]);
     }
@@ -31,7 +32,7 @@ class BlogController extends Controller
         $validated = $request->validate([
             "title" => ['required', 'string', 'min:10', 'max:70'], 
             "body" => ['required', 'string', 'min:10', 'max:1000'], 
-            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048'] 
+            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]);
     
         $author_id = Auth::id();
@@ -59,13 +60,16 @@ class BlogController extends Controller
         $validated = $request->validate([
             "title" => ['required', 'string', 'min:10', 'max:70'], 
             "body" => ['required', 'string', 'min:10', 'max:1000'],
-            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048']  
+            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048']  
         ]);
     
         $author_id = Auth::id();
         $validated['author_id'] = $author_id;
 
         if ($request->hasFile('cover_photo')) {
+            if ($blog->cover_photo && Storage::exists('public/' . $blog->cover_photo)) {
+                Storage::delete('public/' . $blog->cover_photo);
+            }
             $uploadedFile = $request->file('cover_photo');
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $blog->cover_photo = $imagePath;

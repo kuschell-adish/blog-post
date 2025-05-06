@@ -13,7 +13,7 @@ class PasswordController extends Controller
         return view ('reset.index'); 
     }
 
-    public function sendEmailReset (Request $request) {
+    public function email (Request $request) {
         $request->validate(['email' => 'required|email']);
 
         $status = Password::sendResetLink(
@@ -47,5 +47,9 @@ class PasswordController extends Controller
         return $status === Password::PASSWORD_RESET
         ? redirect()->route('sessions.index')->with('status', __($status))
         : back()->withErrors(['email' => [__($status)]]);
+    }
+
+    public function test () {
+        return view ('reset.change-password'); 
     }
 }

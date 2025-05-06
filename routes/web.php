@@ -19,6 +19,8 @@ use Illuminate\Support\Facades\Mail;
 |
 */
 
+Route::redirect('/', '/sessions');
+
 Route::resource('users', UserController::class);
 Route::post('/sessions/logout', [SessionController::class, 'logout'])->name('sessions.logout');
 Route::resource('sessions', SessionController::class);
@@ -27,11 +29,15 @@ Route::post('/forgot-password', [PasswordController::class, 'email'])->name('pas
 Route::get('/reset-password/{token}', [PasswordController::class, 'password'])->name('password.reset');
 Route::post('/reset-password', [PasswordController::class, 'change'])->name('password.update');
 
+Route::get('/test', [PasswordController::class, 'test']);
+
 Route::middleware('auth')->group(function () {
     Route::get('/blogs/filtered', [BlogController::class, 'filtered'])->name('blogs.filtered');
     Route::resource('blogs', BlogController::class);
     Route::resource('comments', CommentController::class);
 });
+
+
 
 
 

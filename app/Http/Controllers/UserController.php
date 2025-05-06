@@ -8,6 +8,7 @@ use Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {  
@@ -52,7 +53,7 @@ class UserController extends Controller
             "birthday" => ['required', 'date'], 
             "gender" => 'required',
             "address" => 'required',
-            "photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048'] 
+            "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]); 
 
         $validated["password"] = Hash::make($validated["password"]);
@@ -82,7 +83,7 @@ class UserController extends Controller
             "birthday" => ['required', 'date'], 
             "gender" => 'required',
             "address" => 'required',
-            "photo" => ['nullable', 'image', 'mimes:jpeg,png,bmp,tiff', 'max:2048'] 
+            "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]);
 
         if ($request->hasFile('photo')) {
@@ -90,7 +91,6 @@ class UserController extends Controller
             $imagePath = $uploadedFile->store('photo', 'public'); 
             $author->photo = $imagePath;
         }
-
         $author->update($validated); 
         return redirect()->route('users.index')->with('message', 'Profile has been updated successfully!');
     }

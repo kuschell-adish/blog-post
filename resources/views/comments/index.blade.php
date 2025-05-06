@@ -1,6 +1,6 @@
 @include('/components.header')
-<body class="w-full p-10 bg-gray-50 flex flex-row">
-    <section class="bg-white w-1/2 rounded-l-lg shadow p-5">
+<body class="w-full bg-gray-50 p-4 sm:p-10 gap-4">
+    <section class="bg-white max-w-5xl rounded-lg shadow p-5 mx-auto">
         @include('/components.messages')
         <article class="p-6">
             <div class="flex justify-between items-center mb-5 text-gray-500">
@@ -28,22 +28,17 @@
             <h2 class="mb-2 text-xl font-bold tracking-tight text-gray-900 ">{{ $blog->title }}</h2>
             <p class="mb-5 font-light text-gray-500 text-justify">{{ $blog->body }}</p>
         </article> 
-    </section>
-
-    <section class="bg-stone-50 w-1/2 py-8 lg:py-16 antialiased rounded-r-lg shadow">
-        <div class="max-w-2xl mx-auto px-4">
-            <p class="text-xl text-emerald-600 font-bold pb-7">Share your opinions 🙌🏼</p>
+        <div class="p-6">
             <form action="{{ route('comments.store') }}" method="POST" class="mb-6">
                 @csrf
                 <input type="hidden" name="blog_id" value="{{ request()->input('blog_id') }}">
                 <input type="hidden" name="author_id" value="{{ Auth::id() }}">
                 <p class="text-xs text-emerald-800 my-2"> Comment as {{Auth::user()->first_name}} {{Auth::user()->last_name}}</p>
-                <div class="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                    <textarea name="comment"id="comment" rows="4"
-                        class="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
-                        placeholder="Write a comment..." required>
-                    </textarea>
-                </div>
+                <div class="py-2 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200">
+                    <textarea name="comment" id="comment" rows="4"
+                        class="w-full px-4 py-2 text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none"
+                        placeholder="Write a comment..." required></textarea>
+                </div>                
                 <div class="mt-6 flex items-center justify-end gap-x-6">
                     <button type="button" id="cancelButton" class="text-sm font-semibold leading-6 text-gray-900">Cancel</button>
                     <button type="submit" class="rounded-md bg-emerald-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-emerald-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600">Post</button>
