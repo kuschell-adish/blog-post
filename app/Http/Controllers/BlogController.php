@@ -14,10 +14,9 @@ class BlogController extends Controller
     public function index () {
         $user = Auth::user();
 
-        $blogs = DB::table('blogs')
-                ->join('authors', 'blogs.author_id', '=', 'authors.id')
-                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'), 'authors.photo')
-                ->get();    
+        $blogs = Blog::with(['user:id,first_name,last_name,photo'])
+                ->latest()
+                ->get();   
     
         return view('blogs.index', ['blogs' => $blogs, 'user' => $user]);
     }
@@ -35,18 +34,25 @@ class BlogController extends Controller
             "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]);
     
-        $author_id = Auth::id();
-        $validated['author_id'] = $author_id;
+        $user_id = Auth::id();
+        $validated['user_id'] = $user_id;
 
         $blog = new Blog();
         $blog->fill($validated);
-    
+
         if ($request->hasFile('cover_photo')) {
             $uploadedFile = $request->file('cover_photo');
-            $imagePath = $uploadedFile->store('photo', 'public'); 
-            $blog->cover_photo = $imagePath;
+            $folder = 'cover_photos/';
+            $filename = uniqid('cover_', true) . '.' . $uploadedFile->getClientOriginalExtension();
+            $filePath = $folder . $filename;
+        
+            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
+        
+            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
+    
+            $blog->cover_photo = $publicUrl;
         }
-
+        
         $blog->save();
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been added successfully!'); 
     }
@@ -63,19 +69,25 @@ class BlogController extends Controller
             "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048']  
         ]);
     
-        $author_id = Auth::id();
-        $validated['author_id'] = $author_id;
+        $user_id = Auth::id();
+        $validated['user_id'] = $user_id;
+
+        $blog->fill($validated);
 
         if ($request->hasFile('cover_photo')) {
-            if ($blog->cover_photo && Storage::exists('public/' . $blog->cover_photo)) {
-                Storage::delete('public/' . $blog->cover_photo);
-            }
             $uploadedFile = $request->file('cover_photo');
-            $imagePath = $uploadedFile->store('photo', 'public'); 
-            $blog->cover_photo = $imagePath;
+            $folder = 'cover_photos/';
+            $filename = uniqid('cover_', true) . '.' . $uploadedFile->getClientOriginalExtension();
+            $filePath = $folder . $filename;
+        
+            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
+        
+            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
+    
+            $blog->cover_photo = $publicUrl;
         }
-
-        $blog->update($validated); 
+    
+        $blog->save();  
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been updated successfully!'); 
 
     }
@@ -88,13 +100,12 @@ class BlogController extends Controller
     public function filtered () {
         $user = Auth::user();
 
-        $filter = DB::table('blogs')
-                ->join('authors', 'blogs.author_id', '=', 'authors.id')
-                ->where('blogs.author_id', $user->id)
-                ->select('blogs.id', 'blogs.title', 'blogs.body', 'blogs.updated_at', 'blogs.author_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
-                ->simplePaginate(10);
+        $blogs = Blog::with('user')
+                ->where('user_id', $user->id)
+                ->select('id', 'title', 'body', 'updated_at', 'user_id')
+                ->paginate(10);
 
-        return view('blogs.filtered', ['blogs' => $filter, 'user' => $user]);
+        return view('blogs.filtered', ['blogs' => $blogs, 'user' => $user]);
     
     }
 }

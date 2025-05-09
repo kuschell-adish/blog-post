@@ -26,7 +26,7 @@ class SessionController extends Controller
         if (auth()->attempt($validated)){
             $request->session()->regenerate();
             $username = auth()->user()->username;
-            return redirect()->route('blogs.index')->with('message', "Welcome back, $username!");
+            return redirect()->route('blogs.index');
         }
 
         return back()->withErrors(['email' => 'The email and password do not match.'])->onlyInput('email'); 

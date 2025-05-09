@@ -12,23 +12,26 @@
                     <div class="mt-10">
                         <label for="cover_photo" class="block text-sm font-medium leading-6 text-gray-900 ">Cover Photo</label>
                         <div class="mt-2 flex flex-col items-center justify-center">
-                        <img src="{{ asset('storage/' . $blog->cover_photo) ? asset('storage/' .$blog->cover_photo) : asset('storage/photo/cover.jpg') }}" class="w-full h-60 object-contain">
-                        <input id ="cover_photo" type ="file" name="cover_photo" accept="image/png, image/jpeg, image/jpg" class="mt-4 rounded-md bg-white px-1 py-1.5 text-sm font-semibold text-gray-900">
+                            <img id="photo_preview"
+                            src="{{ $blog->cover_photo}}"
+                            class="w-full h-80 object-contain rounded-lg mb-4 
+                                   {{ $blog->cover_photo ? '' : 'hidden' }}"
+                            alt="Cover Preview">
+                        <label class="block">
+                            <input id="cover_photo" name="cover_photo" type="file" accept="image/png, image/jpeg, image/jpg" class="block w-full text-sm text-gray-500 mt-2
+                              file:me-4 file:py-2 file:px-4
+                              file:rounded-lg file:border-0
+                              file:text-sm file:font-semibold
+                              file:bg-emerald-600 file:text-white
+                              hover:file:bg-emerald-700
+                              file:disabled:opacity-50 file:disabled:pointer-events-none"
+                              onchange="previewPhoto(event)">
+                          </label>
                         </div>
                         @error('cover_photo')
                         <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                         @enderror
                     </div>
-                    @auth
-                        <div class="mt-5">
-                            <label for="author" class="block text-sm font-medium leading-6 text-gray-900">Author</label>
-                            <div class="mt-2 flex flex-row gap-x-2 ">
-                                <img class="w-16 h-16 rounded-full" src="{{ asset('storage/' . Auth::user()->photo) ? asset('storage/' . Auth::user()->photo) : asset('storage/photo/default.jpg') }}" alt="Profile Picture" />
-                                <input type="author" name="author" id="author" class="pl-2 block w-full  rounded-md  py-1.5 text-gray-900  sm:text-sm sm:leading-6" 
-                                readonly value="{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}">
-                            </div>
-                        </div>
-                    @endauth
                     <div class="mt-10">
                         <label for="title" class="block text-sm font-medium leading-6 text-gray-900">Title</label>
                         <div class="mt-2">
@@ -51,3 +54,21 @@
     </div>
 </body>
 </html>
+
+<script>
+    function previewPhoto(event) {
+        const input = event.target;
+        const preview = document.getElementById('photo_preview');
+
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.classList.remove('hidden');
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>

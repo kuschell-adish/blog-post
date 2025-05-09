@@ -20,39 +20,19 @@ class UserController extends Controller
     public function index () {
         $user = Auth::user();
 
-        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
-
-        if ($response->successful()){
-            $provinces = collect($response->json())->sortBy('name');
-        }
-        else {
-            $provinces = [];
-        }
-        return view('users.index', ['user' => $user, 'provinces' => $provinces]);
+        return view('users.index', ['user' => $user]);
     }
 
     public function create () {
-        $response = Http::get('https://psgc.gitlab.io/api/provinces/');
-
-        if ($response->successful()){
-            $provinces = collect($response->json())->sortBy('name');
-        }
-        else {
-            $provinces = [];
-        }
-        return view('users.create', ['provinces' => $provinces]);
+        return view('users.create');
     }
 
     public function store(Request $request) {
         $validated = $request->validate([
             "first_name" => ['required', 'min:2', 'max:50'], 
             "last_name" => ['required', 'min:2', 'max:50'],
-            "username" => ['required', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_.]+$/', 'unique:authors,username'],
-            "email" => ['required', 'email', 'unique:authors,email'], 
+            "email" => ['required', 'email', 'unique:users,email'], 
             "password" => ['required', 'string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
-            "birthday" => ['required', 'date'], 
-            "gender" => 'required',
-            "address" => 'required',
             "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]); 
 
@@ -63,8 +43,15 @@ class UserController extends Controller
     
         if ($request->hasFile('photo')) {
             $uploadedFile = $request->file('photo');
-            $imagePath = $uploadedFile->store('photo', 'public'); 
-            $user->photo = $imagePath;
+            $folder = 'profile_photos/';
+            $filename = uniqid('profile_', true) . '.' . $uploadedFile->getClientOriginalExtension();
+            $filePath = $folder . $filename;
+        
+            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
+        
+            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
+    
+            $user->photo = $publicUrl;
         }
 
         $user->save();
@@ -72,26 +59,30 @@ class UserController extends Controller
         return redirect()->route('sessions.index');
     }
 
-    public function update (Request $request, User $author, $id) {
-        $author = User::findOrFail($id);
-
+    public function update (Request $request, User $user) {
         $validated = $request->validate([
             "first_name" => ['required', 'min:2', 'max:50'], 
             "last_name" => ['required', 'min:2', 'max:50'],
-            "username" => ['required', 'min:3', 'max:30', 'regex:/^[a-zA-Z0-9_.]+$/', Rule::unique('authors', 'username')->ignore($author->id)],
-            "email" => ['required', 'email', Rule::unique('authors', 'email')->ignore($author->id)], 
-            "birthday" => ['required', 'date'], 
-            "gender" => 'required',
-            "address" => 'required',
+            "email" => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)], 
             "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
         ]);
 
+        $user->fill($validated);
+
         if ($request->hasFile('photo')) {
             $uploadedFile = $request->file('photo');
-            $imagePath = $uploadedFile->store('photo', 'public'); 
-            $author->photo = $imagePath;
+            $folder = 'profile_photos/';
+            $filename = uniqid('profile_', true) . '.' . $uploadedFile->getClientOriginalExtension();
+            $filePath = $folder . $filename;
+        
+            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
+        
+            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
+    
+            $user->photo = $publicUrl;
         }
-        $author->update($validated); 
+        
+        $user->save(); 
         return redirect()->route('users.index')->with('message', 'Profile has been updated successfully!');
     }
 

@@ -19,10 +19,9 @@ class CommentController extends Controller
 
         $blog = Blog::findOrFail($blog_id);
 
-        $comments = Comment::join('authors', 'comments.author_id', '=', 'authors.id')
-                    ->select('comments.id', 'comments.comment', 'comments.updated_at', 'comments.author_id', 'comments.blog_id', DB::raw('CONCAT(authors.first_name, " ", authors.last_name) AS author_name'))
-                    ->where('comments.blog_id', $blog_id)
-                    ->get();
+        $comments = Comment::with('user')
+                ->where('blog_id', $blog_id)
+                ->get();
 
         return view('comments.index', [
             'comments' => $comments,
@@ -36,13 +35,11 @@ class CommentController extends Controller
         $validated = $request->validate([
             "comment" => ['required', 'string', 'min:3', 'max:150'], 
             "blog_id" => ['required', 'integer', 'exists:blogs,id'], 
-            "author_id" => ['required', 'integer', 'exists:authors,id'],
         ]);
 
         $comment = new Comment;
-        $comment->comment = $validated['comment'];
-        $comment->blog_id = $validated['blog_id'];
-        $comment->author_id = $validated['author_id'];
+        $comment->fill($validated);
+        $comment->user_id = auth()->id();
         $comment->save();
 
         return redirect()->route('comments.index', ['blog_id' => $comment->blog_id])->with('message', 'Comment has been created successfully!'); 
@@ -50,8 +47,8 @@ class CommentController extends Controller
 
     public function show ($id) {
 
-        $data = Comment::findOrFail($id); 
-        return view('comments.edit', ['comment' => $data]); 
+        $comment = Comment::findOrFail($id); 
+        return view('comments.edit', ['comment' => $comment]); 
     }
 
     public function update (Request $request, Comment $comment) {
@@ -59,12 +56,10 @@ class CommentController extends Controller
             "comment" => ['required', 'string', 'min:3', 'max:150'], 
         ]);
     
-        $author_id = Auth::id();
-        $validated['author_id'] = $author_id;
-
-    $comment->update($validated); 
-
-    return redirect()->route('comments.index', ['blog_id' => $comment->blog_id])->with('message', 'Comment has been updated successfully!'); 
+        $comment->user_id = auth()->id();
+        $comment->update($validated); 
+        
+        return redirect()->route('comments.index', ['blog_id' => $comment->blog_id])->with('message', 'Comment has been updated successfully!'); 
 
     }
 

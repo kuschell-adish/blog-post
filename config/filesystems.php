@@ -56,6 +56,21 @@ return [
             'throw' => false,
         ],
 
+        'supabase' => [
+            'driver' => 'supabase',
+            'key'    => env('SUPABASE_ANON_KEY'),
+            'bucket' => 'photos',
+            'endpoint' => env('SUPABASE_URL'),
+            'url' => null, 
+            'public' => true,  
+            'defaultUrlGeneration' => null,
+            'defaultUrlGenerationOptions' => [
+                'download' => false,
+                'transform' => [],
+            ],
+            'signedUrlExpires' => 60*60*24,
+        ],
+
     ],
 
     /*

@@ -16,16 +16,12 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    protected $table = 'authors';
+    protected $table = 'users';
     protected $fillable = [
         'first_name',
         'last_name',
-        'username',
         'email',
         'password',
-        'birthday',
-        'gender',
-        'address',
         'photo',
     ];
 
@@ -48,4 +44,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function blogs()
+    {   
+        return $this->hasMany(Blog::class);
+    }
 }

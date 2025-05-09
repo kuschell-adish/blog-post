@@ -9,8 +9,6 @@
             <form action="{{ route('comments.update', ['comment' => $comment->id]) }}" method="POST" class="mt-6">
                 @method('PUT')
                 @csrf
-                <input type="hidden" name="author_id" value="{{ Auth::id() }}">
-
                 <div>
                     <label for="comment" class="block text-sm font-medium text-gray-900">Comment</label>
                     <textarea id="comment" name="comment" rows="4"
