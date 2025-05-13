@@ -48,8 +48,4 @@ class PasswordController extends Controller
         ? redirect()->route('sessions.index')->with('status', __($status))
         : back()->withErrors(['email' => [__($status)]]);
     }
-
-    public function test () {
-        return view ('reset.change-password'); 
-    }
 }

@@ -41,7 +41,7 @@
                         
                             <div class="sm:col-span-3 flex flex-col gap-6 justify-center">
                                 <div>
-                                    <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">First Name <span class="text-sm text-red-500">*</span></label>
+                                    <label for="first_name" class="block text-sm font-medium leading-6 text-gray-900">First Name</label>
                                     <input type="text" name="first_name" id="first_name" required
                                         class="mt-2 p-2 block w-full rounded-md border border-gray-300 text-gray-900 shadow-sm sm:text-sm"
                                         value="{{ $user->first_name }}" />
@@ -51,7 +51,7 @@
                                 </div>
                         
                                 <div>
-                                    <label for="last_name" class="block text-sm font-medium leading-6 text-gray-900">Last Name <span class="text-sm text-red-500">*</span></label>
+                                    <label for="last_name" class="block text-sm font-medium leading-6 text-gray-900">Last Name</label>
                                     <input type="text" name="last_name" id="last_name" required
                                         class="mt-2 p-2 block w-full rounded-md border border-gray-300 text-gray-900 shadow-sm sm:text-sm"
                                         value="{{  $user->last_name  }}" />
@@ -61,7 +61,7 @@
                                 </div>
                         
                                 <div>
-                                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email <span class="text-sm text-red-500">*</span></label>
+                                    <label for="email" class="block text-sm font-medium leading-6 text-gray-900">Email</label>
                                     <input type="text" name="email" id="email" required
                                         class="mt-2 p-2 block w-full rounded-md border border-gray-300 text-gray-900 shadow-sm sm:text-sm"
                                         value="{{  $user->email  }}" />
@@ -69,6 +69,21 @@
                                         <p class="text-xs text-red-700 mt-2">{{$message}}</p>
                                     @enderror
                                 </div>
+
+                                <div>
+                                    <div class="flex flex-row justify-between">
+                                        <label for="password" class="block text-sm font-medium text-gray-900">Password</label>
+                                        <p id="togglePassword" class="block text-sm font-medium text-emerald-600 cursor-pointer">Show Password</p>
+                                    </div>
+                                    <input type="password" name="password" id="password"
+                                        class="mt-2 p-2 block w-full rounded-md border border-gray-300 text-gray-900 shadow-sm sm:text-sm" 
+                                        placeholder="Enter new password"/>
+                                    <p class="text-xs text-gray-500 italic mt-1">Password must have at least 8 characters and must contain the following: uppercase letters, lowercase letters, numbers, and symbols.</p>
+                                    @error('password')
+                                        <p class="text-xs text-red-700 mt-2">{{$message}}</p>
+                                    @enderror
+                                </div>
+                        
                             </div>
                             @endauth
                         </div>
@@ -98,4 +113,12 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
+
+    document.getElementById('togglePassword').addEventListener('click', function () {
+        const passwordInput = document.getElementById('password');
+        const isPassword = passwordInput.type === 'password';
+
+        passwordInput.type = isPassword ? 'text' : 'password';
+        this.textContent = isPassword ? 'Hide Password' : 'Show Password'
+    }); 
 </script>

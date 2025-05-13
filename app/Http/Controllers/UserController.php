@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers;
 use App\Models\User;
-use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
-use Validator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\UserRequest; 
+use App\Services\ImageUploadService;
+
 
 class UserController extends Controller
-{  
-    public function __construct()
+{   
+    protected $imageService;
+
+    public function __construct(ImageUploadService $imageService)
     {
         $this->middleware('auth')->only('update');
+        $this->imageService = $imageService;
     }
     
     public function index () {
@@ -27,62 +29,60 @@ class UserController extends Controller
         return view('users.create');
     }
 
-    public function store(Request $request) {
-        $validated = $request->validate([
-            "first_name" => ['required', 'min:2', 'max:50'], 
-            "last_name" => ['required', 'min:2', 'max:50'],
-            "email" => ['required', 'email', 'unique:users,email'], 
-            "password" => ['required', 'string', 'min:8', 'regex:/[a-z]/', 'regex:/[A-Z]/', 'regex:/[0-9]/', 'regex:/[@$!%*#?&]/'],
-            "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
-        ]); 
-
+    public function store(UserRequest $request) {
+        $validated = $request->validated();
         $validated["password"] = Hash::make($validated["password"]);
-    
         $user = new User();
         $user->fill($validated);
     
         if ($request->hasFile('photo')) {
-            $uploadedFile = $request->file('photo');
-            $folder = 'profile_photos/';
-            $filename = uniqid('profile_', true) . '.' . $uploadedFile->getClientOriginalExtension();
-            $filePath = $folder . $filename;
-        
-            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
-        
-            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
-    
-            $user->photo = $publicUrl;
+            $profilePhotoUrl = $this->imageService->upload(
+                $request->file('photo'),
+                'profile_photos/',
+                'profile_'
+            );
+            $user->photo = $profilePhotoUrl;
         }
 
         $user->save();
-    
-        return redirect()->route('sessions.index');
+        return redirect()->route('sessions.index')->with('message', 'User has been created successfully. Please log in.');;
     }
 
-    public function update (Request $request, User $user) {
-        $validated = $request->validate([
-            "first_name" => ['required', 'min:2', 'max:50'], 
-            "last_name" => ['required', 'min:2', 'max:50'],
-            "email" => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)], 
-            "photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
-        ]);
+    public function update (UserRequest $request, User $user) {
+        $this->authorize('update', $user);
 
+        $oldProfilePicture = $user->photo;
+
+        $validated = $request->validated();
         $user->fill($validated);
 
-        if ($request->hasFile('photo')) {
-            $uploadedFile = $request->file('photo');
-            $folder = 'profile_photos/';
-            $filename = uniqid('profile_', true) . '.' . $uploadedFile->getClientOriginalExtension();
-            $filePath = $folder . $filename;
-        
-            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
-        
-            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
-    
-            $user->photo = $publicUrl;
+        $passwordChanged = false;
+
+        if ($request->filled('password')) {
+            $user->password = Hash::make($validated["password"]);
+            $passwordChanged = true; 
         }
-        
+
+        if ($request->hasFile('photo')) {
+
+            $profilePhotoUrl = $this->imageService->upload(
+                $request->file('photo'),
+                'profile_photos/',
+                'profile_'
+            );
+            $user->photo = $profilePhotoUrl;
+
+            if ($user->photo) {
+                $this->imageService->delete($oldProfilePicture);
+            }
+        }
+
         $user->save(); 
+
+        if ($passwordChanged && Auth::id() === $user->id) {
+            auth()->logout();
+            return redirect()->route('sessions.index')->with('message', 'Password has been changed. Please log in again.');
+        }
         return redirect()->route('users.index')->with('message', 'Profile has been updated successfully!');
     }
 

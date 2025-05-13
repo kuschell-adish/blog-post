@@ -32,7 +32,7 @@
                 @endif
             </div>
             <h2 class="mb-2 text-xl font-bold tracking-tight text-gray-900 ">{{ $blog->title }}</h2>
-            <p class="font-light text-gray-500 text-justify">{{ $blog->body }}</p>
+            <p class="font-light text-gray-500 text-justify">{!! nl2br(e($blog->body)) !!}</p>
         </article> 
         <div class="p-6">
             <form action="{{ route('comments.store') }}" method="POST" class="mb-6">
@@ -56,7 +56,7 @@
                     <footer class="flex justify-between items-center mb-2">
                         <div class="flex items-center">
                             @if( $comment->user->photo ) 
-                                <img class="w-7 h-7 rounded-full" src="{{ asset('storage/' . $comment->user->photo) }}" alt="Profile Picture" />
+                                <img class="w-7 h-7 rounded-full" src="{{ $comment->user->photo }}" alt="Profile Picture" />
                             @else 
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7">
                                     <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />

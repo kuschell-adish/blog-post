@@ -6,11 +6,20 @@ use App\Models\Blog;
 use App\Models\Comment; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB; 
-use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\BlogRequest; 
+use App\Services\ImageUploadService;
+
+
 
 class BlogController extends Controller
 {
+    protected $imageService;
+
+    public function __construct(ImageUploadService $imageService)
+    {
+        $this->imageService = $imageService;
+    }
+
     public function index () {
         $user = Auth::user();
 
@@ -27,72 +36,60 @@ class BlogController extends Controller
         return view('blogs.create', ['user' => $user]);
     }
 
-    public function store (Request $request) {
-        $validated = $request->validate([
-            "title" => ['required', 'string', 'min:10', 'max:70'], 
-            "body" => ['required', 'string', 'min:10', 'max:1000'], 
-            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048'] 
-        ]);
-    
-        $user_id = Auth::id();
-        $validated['user_id'] = $user_id;
-
+    public function store (BlogRequest $request) {
+        $validated = $request->validated();
+        $validated['user_id'] = Auth::id();
         $blog = new Blog();
         $blog->fill($validated);
 
         if ($request->hasFile('cover_photo')) {
-            $uploadedFile = $request->file('cover_photo');
-            $folder = 'cover_photos/';
-            $filename = uniqid('cover_', true) . '.' . $uploadedFile->getClientOriginalExtension();
-            $filePath = $folder . $filename;
-        
-            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
-        
-            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
-    
-            $blog->cover_photo = $publicUrl;
+            $coverPhotoUrl = $this->imageService->upload(
+                $request->file('cover_photo'),
+                'cover_photos/',
+                'cover_'
+            );
+            $blog->cover_photo = $coverPhotoUrl;
         }
-        
         $blog->save();
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been added successfully!'); 
     }
 
-    public function show ($id) {
-        $data = Blog::findOrFail($id); 
-        return view('blogs.edit', ['blog' => $data]); 
+    public function show (Blog $blog) {
+        return view('blogs.edit', ['blog' => $blog]); 
     }
 
-    public function update (Request $request, Blog $blog) {
-        $validated = $request->validate([
-            "title" => ['required', 'string', 'min:10', 'max:70'], 
-            "body" => ['required', 'string', 'min:10', 'max:1000'],
-            "cover_photo" => ['nullable', 'image', 'mimes:jpeg,png', 'max:2048']  
-        ]);
-    
-        $user_id = Auth::id();
-        $validated['user_id'] = $user_id;
+    public function update (BlogRequest $request, Blog $blog) {
+        $this->authorize('update', $blog);
 
+        $oldCoverPhoto = $blog->cover_photo;
+
+        $validated = $request->validated();
         $blog->fill($validated);
 
         if ($request->hasFile('cover_photo')) {
-            $uploadedFile = $request->file('cover_photo');
-            $folder = 'cover_photos/';
-            $filename = uniqid('cover_', true) . '.' . $uploadedFile->getClientOriginalExtension();
-            $filePath = $folder . $filename;
-        
-            Storage::disk('supabase')->put($filePath, file_get_contents($uploadedFile));
-        
-            $publicUrl = 'https://lpzsbfemzduzdbibazdb.supabase.co/storage/v1/object/public/photos/' . $filePath;
-    
-            $blog->cover_photo = $publicUrl;
+            $coverPhotoUrl = $this->imageService->upload(
+                $request->file('cover_photo'),
+                'cover_photos/',
+                'cover_'
+            );
+
+            $blog->cover_photo = $coverPhotoUrl;
+
+            if ($oldCoverPhoto) {
+                $this->imageService->delete($oldCoverPhoto); 
+            }
         }
-    
         $blog->save();  
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been updated successfully!'); 
-
     }
 
     public function destroy (Blog $blog) {
+        $this->authorize('delete', $blog);
+
+        if ($blog->cover_photo) {
+            $this->imageService->delete($blog->cover_photo);
+        }
+    
         $blog->delete();
         return redirect()->route('blogs.filtered')->with('message', 'Blog has been deleted successfully!'); 
     }
