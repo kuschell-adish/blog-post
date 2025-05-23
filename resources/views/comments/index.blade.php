@@ -20,7 +20,7 @@
                     <span class="text-sm ml-auto text-gray-500">{{ date('F d, Y', strtotime($blog->updated_at)) }}</span>
                 </div>
             </div>
-            <div class="w-full h-1/2 mb-5">
+            <div class="w-full h-64 mb-5">
                 @if($blog->cover_photo) 
                     <img src="{{ $blog->cover_photo }}" alt="Cover Photo" class="w-full h-full object-cover rounded">
                 @else 
